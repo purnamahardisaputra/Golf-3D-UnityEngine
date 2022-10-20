@@ -1,12 +1,17 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.WindowsRuntime;
+using TMPro;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
     [SerializeField] Ball ball;
+    [SerializeField] GameObject arrow;
     [SerializeField] LayerMask ballLayer;
+    [SerializeField] TMP_Text ShootCountText;
+
     [SerializeField] LayerMask RayLayer;
     [SerializeField] Camera cam;
     [SerializeField] Transform cameraPivot;
@@ -17,9 +22,25 @@ public class PlayerController : MonoBehaviour
     bool isShooting;
     Vector3 forceDir;
     float forceFactor;
+
+    Renderer[] arrowRends;
+    Color[] arrowOriginalColors;
+
+    int shootCount = 0;
+
+    public int ShootCount { get => shootCount; }
+
     private void Start()
     {
         ballDistance = Vector3.Distance(cam.transform.position, ball.Position) + 1;
+        arrowRends = arrow.GetComponentsInChildren<Renderer>();
+        arrowOriginalColors = new Color[arrowRends.Length];
+        for (int i = 0; i < arrowRends.Length; i++)
+        {
+            arrowOriginalColors[i] = arrowRends[i].material.color;
+        }
+        arrow.SetActive(false);
+        ShootCountText.text = "Shoot Count : " + shootCount;
     }
 
     void Update()
@@ -28,7 +49,7 @@ public class PlayerController : MonoBehaviour
         // {
         // Physics.Raycast()
         // }
-        if (ball.IsMoving)
+        if (ball.IsMoving || ball.IsTeleporting)
             return;
         if (this.transform.position != ball.Position)
             this.transform.position = ball.Position;
@@ -37,9 +58,13 @@ public class PlayerController : MonoBehaviour
         {
             var ray = cam.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, ballDistance, ballLayer))
+            {
                 isShooting = true;
+                arrow.SetActive(true);
+            }
         }
 
+        // Shooting Mode
         if (Input.GetMouseButton(0) && isShooting == true)
         {
             var ray = cam.ScreenPointToRay(Input.mousePosition);
@@ -58,8 +83,19 @@ public class PlayerController : MonoBehaviour
                 forceMagnitude = Mathf.Clamp(forceMagnitude, 0, 5);
                 forceFactor = forceMagnitude / 5;
             }
+
+            // Arrow
+            this.transform.LookAt(this.transform.position + forceDir);
+            arrow.transform.localScale = new Vector3(1 + 0.5f * forceFactor, 1 + 0.5f * forceFactor, 1 + 2 * forceFactor);
+
+            for (int i = 0; i < arrowRends.Length; i++)
+            {
+                arrowRends[i].material.color = Color.Lerp(arrowOriginalColors[i], Color.red, forceFactor);
+            }
+
         }
 
+        //camera mode
         if (Input.GetMouseButton(0) && isShooting == false)
         {
             var Current = cam.ScreenToViewportPoint(Input.mousePosition);
@@ -81,12 +117,15 @@ public class PlayerController : MonoBehaviour
                 cameraPivot.transform.RotateAround(ball.Position, cam.transform.right, 65 - angle);
         }
 
-        if (Input.GetMouseButtonUp(0))
+        if (Input.GetMouseButtonUp(0) && isShooting)
         {
             ball.AddForce(forceDir * shootForce * forceFactor);
+            shootCount += 1;
+            ShootCountText.text = "Shoot Count : " + shootCount;
             forceFactor = 0;
             forceDir = Vector3.zero;
             isShooting = false;
+            arrow.SetActive(false);
         }
 
         lastMousePosition = Input.mousePosition;

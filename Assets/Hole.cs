@@ -4,7 +4,13 @@ using UnityEngine;
 
 public class Hole : MonoBehaviour
 {
-    private void OnTriggerEnter(Collider other) {
+    bool entered = false;
+
+    public bool Entered { get => entered; }
+
+    private void OnTriggerEnter(Collider other)
+    {
         Debug.Log("Entered");
+        entered = true;
     }
 }

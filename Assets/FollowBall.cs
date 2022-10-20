@@ -4,7 +4,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-public class FollwBall : MonoBehaviour
+public class FollowBall : MonoBehaviour
 {
     [SerializeField] Ball ball;
     [SerializeField] float speed = 1;
