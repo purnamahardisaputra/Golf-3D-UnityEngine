@@ -8,7 +8,7 @@ public class FollowBall : MonoBehaviour
 {
     [SerializeField] Ball ball;
     [SerializeField] float speed = 1;
-
+    public bool IsMoving => this.transform.position == ball.Position;
     // Update is called once per frame
     void Update()
     {

@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.WindowsRuntime;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
@@ -11,10 +12,11 @@ public class PlayerController : MonoBehaviour
     [SerializeField] GameObject arrow;
     [SerializeField] LayerMask ballLayer;
     [SerializeField] TMP_Text ShootCountText;
-
+    [SerializeField] Image aim;
+    [SerializeField] LineRenderer line;
     [SerializeField] LayerMask RayLayer;
     [SerializeField] Camera cam;
-    [SerializeField] Transform cameraPivot;
+    [SerializeField] FollowBall cameraPivot;
     [SerializeField] Vector2 camSensitivity;
     [SerializeField] float shootForce;
     Vector3 lastMousePosition;
@@ -41,6 +43,8 @@ public class PlayerController : MonoBehaviour
         }
         arrow.SetActive(false);
         ShootCountText.text = "Shoot Count : " + shootCount;
+
+        arrow.SetActive(false);
     }
 
     void Update()
@@ -51,8 +55,19 @@ public class PlayerController : MonoBehaviour
         // }
         if (ball.IsMoving || ball.IsTeleporting)
             return;
+        // if (!cameraPivot.IsMoving && aim.gameObject.activeInHierarchy == false)
+        // {
+        //     aim.gameObject.SetActive(true);
+        //     var rect = aim.GetComponent<RectTransform>();
+        //     rect.anchoredPosition = cam.WorldToScreenPoint(ball.Position);
+        // }
         if (this.transform.position != ball.Position)
+        {
             this.transform.position = ball.Position;
+            aim.gameObject.SetActive(true);
+            var rect = aim.GetComponent<RectTransform>();
+            rect.anchoredPosition = cam.WorldToScreenPoint(ball.Position);
+        }
 
         if (Input.GetMouseButtonDown(0))
         {
@@ -61,6 +76,7 @@ public class PlayerController : MonoBehaviour
             {
                 isShooting = true;
                 arrow.SetActive(true);
+                line.enabled = true;
             }
         }
 
@@ -93,6 +109,16 @@ public class PlayerController : MonoBehaviour
                 arrowRends[i].material.color = Color.Lerp(arrowOriginalColors[i], Color.red, forceFactor);
             }
 
+            // Aim
+            var rect = aim.GetComponent<RectTransform>();
+            rect.anchoredPosition = Input.mousePosition;
+
+            //line
+            var ballScreenPos = cam.WorldToScreenPoint(ball.Position);
+            line.SetPositions(new Vector3[]{
+                ballScreenPos,
+                Input.mousePosition
+            });
         }
 
         //camera mode
@@ -126,6 +152,8 @@ public class PlayerController : MonoBehaviour
             forceDir = Vector3.zero;
             isShooting = false;
             arrow.SetActive(false);
+            aim.gameObject.SetActive(false);
+            line.enabled = false;
         }
 
         lastMousePosition = Input.mousePosition;
