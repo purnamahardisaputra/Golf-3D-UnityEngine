@@ -17,6 +17,7 @@ public class GameManager : MonoBehaviour
     {
         if (hole.Entered && gameOverPanel.activeInHierarchy == false)
         {
+            pauseGame();
             gameOverPanel.SetActive(true);
             gameOverText.text = "Finished! Shoot Count : " + player.ShootCount;
         }
@@ -25,16 +26,27 @@ public class GameManager : MonoBehaviour
     public void BackToMainMenu()
     {
         SceneLoader.Load("MainMenu");
+        resumeGame();
     }
 
     public void Replay()
     {
         SceneLoader.ReloadLevel();
+        resumeGame();
     }
 
     public void PlayNext()
     {
         SceneLoader.LoadNextLevel();
+        resumeGame();
+    }
+
+    public void pauseGame(){
+        Time.timeScale = 0;
+    }
+
+    public void resumeGame(){
+        Time.timeScale = 1;
     }
 
 }
