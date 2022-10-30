@@ -9,9 +9,6 @@ EditorBuildSettings:
     path: Assets/Scenes/MainMenu.unity
     guid: e0aa0f2deeec1b941946f82bf58e65de
   - enabled: 1
-    path: Assets/Scenes/LoadingProgress.unity
-    guid: 925ac9e5f0c19ef46880ab6543ec3506
-  - enabled: 1
     path: Assets/Scenes/Level1.unity
     guid: dafd6195a2ccc6243bc602efe8afa366
   - enabled: 1
@@ -26,4 +23,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Level5.unity
     guid: 343ebd3e66b1cc54aa368549b5ef2ad2
+  - enabled: 1
+    path: Assets/Scenes/LoadingProgress.unity
+    guid: 925ac9e5f0c19ef46880ab6543ec3506
   m_configObjects: {}

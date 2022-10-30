@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -7,6 +8,7 @@ using UnityEngine.UI;
 public class LoadingProgress : MonoBehaviour
 {
     [SerializeField] Image image;
+    [SerializeField] TMP_Text loadingText;
 
     private void Start()
     {
@@ -23,8 +25,9 @@ public class LoadingProgress : MonoBehaviour
         while (asyncOp.isDone == false)
         {
             image.fillAmount = asyncOp.progress;
-
+            loadingText.text = "Loading " + (int)(asyncOp.progress * 100) + "%";
             yield return null;
         }
     }
+
 }

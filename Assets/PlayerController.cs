@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -19,6 +20,10 @@ public class PlayerController : MonoBehaviour
     [SerializeField] FollowBall cameraPivot;
     [SerializeField] Vector2 camSensitivity;
     [SerializeField] float shootForce;
+    [SerializeField] Image imageBar;
+    [SerializeField] AudioSource audioSource;
+    [SerializeField] AudioSource bowAudio;
+    Color imageBarColor;
     Vector3 lastMousePosition;
     float ballDistance;
     bool isShooting;
@@ -43,11 +48,11 @@ public class PlayerController : MonoBehaviour
         }
         arrow.SetActive(false);
         ShootCountText.text = "Shoot Count : " + shootCount;
-
+        imageBar.fillAmount = 0;
         arrow.SetActive(false);
     }
 
-    void Update()
+    private void Update()
     {
         // if (Input.GetMouseButtonDown(0))
         // {
@@ -83,6 +88,7 @@ public class PlayerController : MonoBehaviour
         // Shooting Mode
         if (Input.GetMouseButton(0) && isShooting == true)
         {
+            
             var ray = cam.ScreenPointToRay(Input.mousePosition);
             RaycastHit Hit;
             // Debug.DrawRay(ray.origin, ray.direction * 100);
@@ -99,10 +105,28 @@ public class PlayerController : MonoBehaviour
                 forceMagnitude = Mathf.Clamp(forceMagnitude, 0, 5);
                 forceFactor = forceMagnitude / 5;
             }
+            
 
             // Arrow
             this.transform.LookAt(this.transform.position + forceDir);
             arrow.transform.localScale = new Vector3(1 + 0.5f * forceFactor, 1 + 0.5f * forceFactor, 1 + 2 * forceFactor);
+            imageBar.fillAmount = forceFactor;
+            bowAudio.Play();
+
+            // Bar Power
+            if(imageBar.fillAmount < 0.4){
+                imageBarColor = Color.green;
+                bowAudio.pitch = 1.9f;
+            }
+            else if(imageBar.fillAmount < 0.8){
+                imageBarColor = Color.yellow;
+                bowAudio.pitch = 2.5f;
+            }
+            else{
+                imageBarColor = Color.red;
+                bowAudio.pitch = 3f;
+            }
+            
 
             for (int i = 0; i < arrowRends.Length; i++)
             {
@@ -119,8 +143,10 @@ public class PlayerController : MonoBehaviour
                 ballScreenPos,
                 Input.mousePosition
             });
+
         }
 
+        imageBar.color = Color.Lerp(imageBar.color, imageBarColor, Time.deltaTime * 10);
         //camera mode
         if (Input.GetMouseButton(0) && isShooting == false)
         {
@@ -154,8 +180,12 @@ public class PlayerController : MonoBehaviour
             arrow.SetActive(false);
             aim.gameObject.SetActive(false);
             line.enabled = false;
+            imageBar.fillAmount = 0;
+            bowAudio.Stop();
+            audioSource.PlayOneShot(audioSource.clip);
         }
 
         lastMousePosition = Input.mousePosition;
     }
+
 }

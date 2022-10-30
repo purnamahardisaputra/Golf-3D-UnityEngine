@@ -49,6 +49,7 @@ public class Ball : MonoBehaviour
         }
     }
 
+
     IEnumerator DelayedTeleport()
     {
         isTeleporting = true;
