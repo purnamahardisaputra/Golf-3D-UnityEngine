@@ -116,15 +116,15 @@ public class PlayerController : MonoBehaviour
             // Bar Power
             if(imageBar.fillAmount < 0.4){
                 imageBarColor = Color.green;
-                bowAudio.pitch = 1.9f;
+                bowAudio.pitch = 0.2f;
             }
             else if(imageBar.fillAmount < 0.8){
                 imageBarColor = Color.yellow;
-                bowAudio.pitch = 2.5f;
+                bowAudio.pitch = 0.5f;
             }
             else{
                 imageBarColor = Color.red;
-                bowAudio.pitch = 3f;
+                bowAudio.pitch = 1f;
             }
             
 

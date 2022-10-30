@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -32,7 +33,14 @@ public class SceneLoaderManager : MonoBehaviour
         }
         for (int i = 0; i < levelsUnlcocked; i++)
         {
-            buttons[i].interactable = true;
+            try
+            {
+                buttons[i].interactable = true;
+            }
+            catch (IndexOutOfRangeException)
+            {
+                Debug.Log("No more levels");
+            }
         }
     }
 }
